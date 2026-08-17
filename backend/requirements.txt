@@ -23,6 +23,7 @@ kombu==5.6.2
 packaging==26.1
 prompt_toolkit==3.0.52
 psycopg2-binary==2.9.11
+Pillow==11.3.0
 PyJWT==2.12.1
 python-dateutil==2.9.0.post0
 PyYAML==6.0.3

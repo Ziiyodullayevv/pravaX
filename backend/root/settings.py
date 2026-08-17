@@ -78,17 +78,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'root.wsgi.application'
 
-# ─── PostgreSQL ───────────────────────────────────────────────────────────────
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+# ─── Database ────────────────────────────────────────────────────────────────
+# Production uses PostgreSQL. Setting DB_ENGINE=sqlite makes the package
+# runnable locally without installing PostgreSQL (useful for a first smoke test).
+DB_ENGINE = env('DB_ENGINE', default='postgresql')
+if DB_ENGINE == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': env('DB_NAME', default=str(BASE_DIR / 'db.sqlite3')),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': env('DB_HOST', default='localhost'),
+            'PORT': env('DB_PORT', default='5432'),
+        }
+    }
 
 # ─── Redis Cache (OTP storage) ────────────────────────────────────────────────
 CACHES = {

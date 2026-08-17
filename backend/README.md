@@ -79,6 +79,10 @@ cp .env.example .env
 # .env faylini o'z ma'lumotlaringiz bilan to'ldiring
 ```
 
+PostgreSQL o‘rnatilmagan lokal sinov uchun `.env` faylida `DB_ENGINE=sqlite` va
+`DB_NAME=./db.sqlite3` dan foydalanish mumkin. Production muhitida
+`DB_ENGINE=postgresql` qoldiriladi.
+
 ### 3. Docker orqali PostgreSQL va Redis
 
 ```bash
