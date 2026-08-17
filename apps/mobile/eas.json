@@ -1,0 +1,34 @@
+{
+  "cli": {
+    "version": ">= 16.32.0",
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.pravax.uz",
+        "EXPO_PUBLIC_TELEGRAM_BOT_USERNAME": "pravaX_bot"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.pravax.uz",
+        "EXPO_PUBLIC_TELEGRAM_BOT_USERNAME": "pravaX_bot"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.pravax.uz",
+        "EXPO_PUBLIC_TELEGRAM_BOT_USERNAME": "pravaX_bot"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

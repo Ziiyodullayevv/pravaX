@@ -1,0 +1,70 @@
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# ─── Virtual environment ──────────────────────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+
+# ─── Django ───────────────────────────────────────────────────────────────────
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_root/
+
+# ─── Environment variables (MUHIM: hech qachon commitlamang!) ─────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── OpenAPI export ───────────────────────────────────────────────────────────
+schema.yaml
+schema.json
+
+# ─── IDEs ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ─── Testing ──────────────────────────────────────────────────────────────────
+.coverage
+.pytest_cache/
+htmlcov/
+coverage.xml
+*.cover
+
+# ─── Build ────────────────────────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+.eggs/
+
+
+.savollar
+savollar/
+
+.images
+images/
+
+.signs_z
+signs_z/
+
+.rules_r
+/rules_r
+
+.qoida_uz.pdf
+
+.docs
+docs/

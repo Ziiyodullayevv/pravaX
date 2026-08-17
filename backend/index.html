@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prava GO — Demo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+.app { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
+
+h1 { font-size: 22px; font-weight: 800; }
+h2 { font-size: 13px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 14px; }
+h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+
+.card { background: #fff; border-radius: 14px; padding: 20px; margin-bottom: 14px; box-shadow: 0 1px 5px rgba(0,0,0,.07); }
+
+input, select {
+  width: 100%; padding: 10px 12px;
+  border: 1.5px solid #e5e7eb; border-radius: 8px;
+  font-size: 14px; margin-bottom: 10px; outline: none;
+  background: #fafafa; transition: border-color .15s;
+}
+input:focus, select:focus { border-color: #4f46e5; background: #fff; }
+label { font-size: 13px; font-weight: 500; color: #374151; display: block; margin-bottom: 4px; }
+
+button {
+  padding: 10px 18px; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: opacity .15s, transform .1s;
+}
+button:hover:not(:disabled) { opacity: .87; }
+button:active:not(:disabled) { transform: scale(.98); }
+button:disabled { opacity: .4; cursor: default; }
+.btn-primary { background: #4f46e5; color: #fff; }
+.btn-success { background: #10b981; color: #fff; }
+.btn-danger  { background: #ef4444; color: #fff; }
+.btn-ghost   { background: #f3f4f6; color: #374151; }
+.btn-sm      { padding: 6px 12px; font-size: 13px; }
+.btn-block   { width: 100%; margin-top: 4px; }
+.btn-row     { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Header */
+.site-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+
+/* Status bar */
+.status-bar {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #e2e8f0; border-radius: 12px; padding: 12px 16px;
+  font-size: 13px; margin-bottom: 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.sb-left   { display: flex; align-items: center; gap: 12px; }
+.sb-email  { font-weight: 700; color: #fff; font-size: 14px; }
+.sb-name   { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+.sb-right  { display: flex; gap: 8px; }
+.badge-premium  { background: #f59e0b; color: #fff; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-standard { background: #475569; color: #fff; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+/* Steps */
+.steps { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.step { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #e5e7eb; color: #9ca3af; }
+.step.active { background: #4f46e5; color: #fff; }
+.step.done   { background: #10b981; color: #fff; }
+
+/* Mode cards */
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode-card {
+  border: 2px solid #e5e7eb; border-radius: 12px; padding: 22px 16px;
+  cursor: pointer; transition: all .2s; text-align: center;
+}
+.mode-card:hover { border-color: #4f46e5; box-shadow: 0 4px 14px rgba(79,70,229,.18); transform: translateY(-2px); }
+.mode-card.test-mode:hover { border-color: #f59e0b; box-shadow: 0 4px 14px rgba(245,158,11,.18); }
+.mode-icon  { font-size: 38px; margin-bottom: 10px; }
+.mode-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.mode-desc  { font-size: 12px; color: #9ca3af; line-height: 1.6; }
+
+/* Category grid */
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.cat-card { border: 2px solid #e5e7eb; border-radius: 10px; padding: 14px; cursor: pointer; transition: all .15s; }
+.cat-card:hover    { border-color: #818cf8; background: #f5f3ff; }
+.cat-card.selected { border-color: #4f46e5; background: #ede9fe; }
+.cat-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.cat-meta { font-size: 11px; color: #9ca3af; }
+
+/* Quiz toolbar */
+.quiz-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+.quiz-left  { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #6b7280; }
+.quiz-right { display: flex; align-items: center; gap: 10px; }
+.correct-count { font-size: 14px; font-weight: 700; color: #10b981; }
+.quiz-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+/* Timer */
+.timer { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; padding: 4px 12px; border-radius: 8px; background: #f0fdf4; color: #10b981; letter-spacing: 1px; }
+.timer.warn   { background: #fffbeb; color: #d97706; }
+.timer.danger { background: #fef2f2; color: #dc2626; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* Progress */
+.progress-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-bottom: 12px; }
+.progress-fill { height: 100%; background: #4f46e5; border-radius: 3px; transition: width .4s; }
+
+/* Question card */
+.q-card { border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: border-color .2s; }
+.q-card.answered { border-color: #d1d5db; background: #fafafa; }
+.q-num  { font-size: 11px; color: #9ca3af; margin-bottom: 6px; font-weight: 600; letter-spacing: .3px; }
+.q-text { font-size: 14px; font-weight: 500; margin-bottom: 14px; line-height: 1.65; }
+.q-img  { width: 100%; max-height: 180px; object-fit: contain; border-radius: 8px; margin-bottom: 12px; background: #f1f5f9; }
+
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice-btn {
+  text-align: left; padding: 11px 14px; width: 100%;
+  border: 2px solid #e5e7eb; border-radius: 8px;
+  background: #fff; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.choice-btn:hover:not(:disabled) { border-color: #818cf8; background: #f5f3ff; }
+.choice-btn.correct { border-color: #10b981; background: #d1fae5; color: #065f46; }
+.choice-btn.wrong   { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+
+/* Result */
+.result-box   { text-align: center; padding: 28px 16px; }
+.res-score    { font-size: 62px; font-weight: 900; line-height: 1; }
+.res-score.pass { color: #10b981; }
+.res-score.fail { color: #ef4444; }
+.res-label    { font-size: 20px; font-weight: 700; margin: 8px 0 24px; }
+.res-stats    { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat .val    { font-size: 26px; font-weight: 800; }
+.stat .lbl    { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+
+/* Sessions list */
+.sess-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid #f3f4f6; gap: 10px;
+}
+.sess-row:last-child { border-bottom: none; }
+.sess-title { font-size: 14px; font-weight: 600; }
+.sess-meta  { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.sess-date  { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.sess-badges { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+
+/* Badges */
+.badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge.completed   { background: #d1fae5; color: #065f46; }
+.badge.in_progress { background: #dbeafe; color: #1d4ed8; }
+.badge.abandoned   { background: #fee2e2; color: #991b1b; }
+.badge.m-test      { background: #fef3c7; color: #92400e; }
+.badge.m-cat       { background: #ede9fe; color: #5b21b6; }
+
+/* Alert */
+.alert { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; line-height: 1.5; }
+.alert.err  { background: #fee2e2; color: #991b1b; }
+.alert.info { background: #dbeafe; color: #1d4ed8; }
+.alert.ok   { background: #d1fae5; color: #065f46; }
+
+/* Profile */
+.pf-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.pf-avatar {
+  width: 62px; height: 62px; border-radius: 50%;
+  background: #4f46e5; color: #fff; font-size: 26px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; overflow: hidden;
+}
+.pf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pf-full-name  { font-size: 17px; font-weight: 700; }
+.pf-email      { font-size: 13px; color: #6b7280; margin-top: 2px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.info-item { background: #f8fafc; border-radius: 8px; padding: 10px 12px; }
+.info-key   { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.info-val   { font-size: 13px; font-weight: 600; color: #334155; margin-top: 2px; }
+
+.divider { border: none; border-top: 1px solid #f1f5f9; margin: 16px 0; }
+.hidden { display: none !important; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* Telegram auth */
+.tg-btn {
+  width: 100%; padding: 11px 18px; border: none; border-radius: 8px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  background: #229ED9; color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .15s;
+}
+.tg-btn:hover:not(:disabled) { opacity: .87; }
+.tg-btn:disabled { opacity: .45; cursor: default; }
+.tg-polling {
+  border: 2px dashed #229ED9; border-radius: 12px; padding: 20px;
+  text-align: center; background: #f0f9ff;
+}
+.tg-dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: #229ED9; margin: 0 3px;
+  animation: tg-bounce 1.2s infinite;
+}
+.tg-dot:nth-child(2) { animation-delay: .2s; }
+.tg-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes tg-bounce { 0%,80%,100%{transform:scale(.8);opacity:.5} 40%{transform:scale(1.2);opacity:1} }
+.or-divider {
+  display: flex; align-items: center; gap: 10px;
+  color: #9ca3af; font-size: 12px; margin: 14px 0;
+}
+.or-divider::before, .or-divider::after {
+  content: ''; flex: 1; border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 500px) {
+  .mode-grid  { grid-template-columns: 1fr; }
+  .info-grid  { grid-template-columns: 1fr; }
+  .res-stats  { gap: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Site header ── -->
+  <div class="site-header">
+    <h1>🚗 Prava GO</h1>
+    <span style="font-size:12px;color:#9ca3af">API Demo</span>
+  </div>
+
+  <!-- ── Status bar (logged-in) ── -->
+  <div class="status-bar hidden" id="status-bar">
+    <div class="sb-left">
+      <div>
+        <div class="sb-email" id="sb-email">—</div>
+        <div class="sb-name"  id="sb-name">—</div>
+      </div>
+      <span id="sb-plan"></span>
+    </div>
+    <div class="sb-right">
+      <button class="btn-sm btn-ghost" onclick="goProfile()">👤 Profil</button>
+      <button class="btn-sm btn-danger"  onclick="logout()">Chiqish</button>
+    </div>
+  </div>
+
+  <!-- ── Step indicators ── -->
+  <div class="steps" id="steps">
+    <div class="step active" id="step-1">1. Kirish</div>
+    <div class="step"        id="step-2">2. Mavzu</div>
+    <div class="step"        id="step-3">3. Imtihon</div>
+    <div class="step"        id="step-4">4. Natija</div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — LOGIN
+  ══════════════════════════════════════════ -->
+  <div id="sc-login">
+
+    <!-- Telegram auth -->
+    <div class="card">
+      <h2>Telegram orqali kirish</h2>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:14px">
+        Parol va OTP kerak emas. Bot orqali telefon raqamingizni ulashing.
+      </p>
+
+      <!-- Boshlash tugmasi -->
+      <div id="tg-start-wrap">
+        <button class="tg-btn" onclick="startTgAuth()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.466 13.9l-2.95-.924c-.642-.204-.654-.642.136-.953l11.51-4.44c.535-.194 1.003.13.732.638z"/>
+          </svg>
+          Telegram orqali kirish
+        </button>
+      </div>
+
+      <!-- Polling holati -->
+      <div id="tg-polling-wrap" class="hidden">
+        <div class="tg-polling">
+          <div style="font-size:28px;margin-bottom:10px">✈️</div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:6px">Telegram botda tasdiqlang</div>
+          <div style="font-size:13px;color:#4b5563;margin-bottom:14px">
+            Bot ochildi — <b>kontaktingizni ulashing</b>.<br>
+            Keyin avtomatik tizimga kirasiz.
+          </div>
+          <div style="margin-bottom:14px">
+            <span class="tg-dot"></span>
+            <span class="tg-dot"></span>
+            <span class="tg-dot"></span>
+          </div>
+          <div style="font-size:12px;color:#9ca3af;margin-bottom:14px">
+            Qolgan vaqt: <span id="tg-countdown" style="font-weight:700;color:#229ED9">5:00</span>
+          </div>
+          <button class="btn-ghost btn-sm" onclick="cancelTgAuth()">Bekor qilish</button>
+        </div>
+        <div id="al-tg" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <!-- Email auth -->
+    <div class="card">
+      <h2>Email orqali kirish</h2>
+      <div id="al-login"></div>
+      <label>Email</label>
+      <input type="email" id="in-email" placeholder="email@example.com"
+             onkeydown="if(event.key==='Enter')sendOtp()">
+      <button class="btn-primary btn-block" onclick="sendOtp()">OTP yuborish →</button>
+    </div>
+
+    <div class="card hidden" id="otp-box">
+      <h2>OTP tasdiqlash</h2>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:12px">Emailga 6 xonali kod yuborildi.</p>
+      <label>Kod</label>
+      <input type="text" id="in-otp" placeholder="123456" maxlength="6" inputmode="numeric"
+             onkeydown="if(event.key==='Enter')checkOtp()">
+      <button class="btn-success btn-block" onclick="checkOtp()">Tasdiqlash ✓</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — HOME
+  ══════════════════════════════════════════ -->
+  <div id="sc-home" class="hidden">
+
+    <!-- Imtihon turi -->
+    <div class="card">
+      <h2>Imtihon turi</h2>
+      <div class="mode-grid">
+
+        <div class="mode-card" onclick="goCategories()">
+          <div class="mode-icon">📚</div>
+          <div class="mode-title">Kategoriya bo'yicha</div>
+          <div class="mode-desc">Mavzu tanlab, o'sha mavzudagi barcha savollarni yeching</div>
+        </div>
+
+        <div class="mode-card test-mode" onclick="startTest()">
+          <div class="mode-icon">🎯</div>
+          <div class="mode-title">20-savollik test</div>
+          <div class="mode-desc">Barcha mavzulardan tasodifiy 20 savol · ⏱ 20 daqiqa</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sessions history -->
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:14px">
+        <h2 style="margin-bottom:0">So'nggi natijalar</h2>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm" style="background:#fef3c7;color:#92400e;font-weight:700" onclick="goMistakes()">❌ Xatolarim</button>
+          <button class="btn-sm btn-ghost" onclick="loadHome()">↻</button>
+        </div>
+      </div>
+      <div id="sess-list"><p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — CATEGORIES
+  ══════════════════════════════════════════ -->
+  <div id="sc-cats" class="hidden">
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:14px">
+        <h2 style="margin-bottom:0">Mavzu tanlang</h2>
+        <button class="btn-sm btn-ghost" onclick="goHome()">← Orqaga</button>
+      </div>
+      <div class="cat-grid" id="cat-grid">
+        <p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p>
+      </div>
+      <hr class="divider">
+      <div class="flex-between">
+        <span style="font-size:13px;color:#9ca3af" id="cat-hint">Mavzu tanlang</span>
+        <button class="btn-primary" id="btn-cat-start" disabled onclick="startCatSession()">
+          Imtihon boshlash →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — QUIZ
+  ══════════════════════════════════════════ -->
+  <div id="sc-quiz" class="hidden">
+
+    <!-- Toolbar -->
+    <div class="card" style="padding:14px 18px">
+      <div class="quiz-toolbar">
+        <div class="quiz-left">
+          <span id="qz-mode-badge"></span>
+          <span id="qz-counter">0 / 0</span>
+        </div>
+        <div class="quiz-right">
+          <span class="correct-count" id="qz-correct">✓ 0</span>
+          <div id="timer-wrap" class="hidden">
+            <div class="timer" id="timer">20:00</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="qz-progress" style="width:0%"></div></div>
+      <div class="quiz-actions">
+        <button class="btn-sm btn-danger"  onclick="doAbandon()">✕ Tashlab ketish</button>
+        <button class="btn-sm btn-success" id="btn-submit" disabled onclick="submitAnswers(false)">
+          Yakunlash ✓
+        </button>
+      </div>
+    </div>
+
+    <div id="qz-body"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — RESULT
+  ══════════════════════════════════════════ -->
+  <div id="sc-result" class="hidden">
+    <div class="card result-box">
+      <div class="res-score" id="res-score"></div>
+      <div class="res-label" id="res-label"></div>
+      <div class="res-stats">
+        <div class="stat"><div class="val" id="rs-total">—</div><div class="lbl">Jami savol</div></div>
+        <div class="stat"><div class="val" id="rs-pct">—</div><div class="lbl">Foiz</div></div>
+        <div class="stat"><div class="val" id="rs-wrong">—</div><div class="lbl">Xato</div></div>
+        <div class="stat"><div class="val" id="rs-time">—</div><div class="lbl">Vaqt</div></div>
+      </div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn-primary" onclick="goHome()">🏠 Bosh sahifa</button>
+        <button class="btn-ghost"   onclick="goCategories()">↻ Qayta</button>
+      </div>
+    </div>
+    <div id="res-questions"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — MISTAKES
+  ══════════════════════════════════════════ -->
+  <div id="sc-mistakes" class="hidden">
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:14px">
+        <div>
+          <h2 style="margin-bottom:2px">Xato javob berilgan savollar</h2>
+          <p style="font-size:12px;color:#9ca3af" id="mis-count"></p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="mis-cat-filter" style="width:auto;margin-bottom:0;font-size:13px" onchange="loadMistakes()">
+            <option value="">Barcha mavzular</option>
+          </select>
+          <button class="btn-sm btn-ghost" onclick="goHome()">← Orqaga</button>
+        </div>
+      </div>
+      <div id="mis-body"><p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN — PROFILE
+  ══════════════════════════════════════════ -->
+  <div id="sc-profile" class="hidden">
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:18px">
+        <h2 style="margin-bottom:0">Profil</h2>
+        <button class="btn-sm btn-ghost" onclick="goHome()">← Orqaga</button>
+      </div>
+
+      <div class="pf-header" id="pf-header"></div>
+      <div class="info-grid"  id="pf-info"></div>
+
+      <hr class="divider">
+      <h3>Ma'lumotlarni yangilash</h3>
+      <p style="font-size:12px;color:#9ca3af;margin-bottom:14px">
+        Email o'zgartirilmaydi.
+      </p>
+
+      <div id="al-profile"></div>
+
+      <label>Ism</label>
+      <input type="text" id="pf-fn"    placeholder="Ism">
+      <label>Familiya</label>
+      <input type="text" id="pf-ln"    placeholder="Familiya">
+      <label>Telefon</label>
+      <input type="tel"  id="pf-phone" placeholder="+998901234567">
+      <label>Rasm URL</label>
+      <input type="url"  id="pf-photo" placeholder="https://...">
+
+      <button class="btn-primary btn-block" onclick="saveProfile()">💾 Saqlash</button>
+    </div>
+  </div>
+
+</div><!-- /.app -->
+<script>
+'use strict';
+const BASE = 'http://127.0.0.1:8000';
+
+// ── State ──────────────────────────────────────────────────────────────────────
+let token         = localStorage.getItem('prava_token') || null;
+let user          = null;
+let sessId        = null;
+let sessMode      = null;   // 'category' | 'test'
+let sessQs        = [];     // session_questions array
+let answers       = {};     // question_id → { choiceId, isCorrect, sqId }
+let selCatId      = null;
+let timerHandle   = null;
+let timeLeft      = 0;
+let startedAt     = null;
+
+// ── API ────────────────────────────────────────────────────────────────────────
+function req(path, opts = {}) {
+  const h = { 'Content-Type': 'application/json' };
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  return fetch(BASE + path, { headers: h, ...opts }).then(async r => {
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw d;
+    return d;
+  });
+}
+
+// ── Screens ────────────────────────────────────────────────────────────────────
+const ALL_SCREENS = ['sc-login','sc-home','sc-cats','sc-quiz','sc-result','sc-profile','sc-mistakes'];
+
+function show(id) {
+  ALL_SCREENS.forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function step(n) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById(`step-${i}`);
+    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  });
+}
+
+function msg(elId, text, type = 'err') {
+  const el = document.getElementById(elId);
+  if (el) el.innerHTML = text ? `<div class="alert ${type}">${h(text)}</div>` : '';
+}
+
+function h(s) {                          // html-escape
+  return String(s ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── TELEGRAM AUTH ──────────────────────────────────────────────────────────────
+
+let tgPollInterval  = null;
+let tgCountdown     = null;
+let tgSecondsLeft   = 300;
+let tgToken         = null;
+
+async function startTgAuth() {
+  msg('al-tg', '');
+  try {
+    const res = await req('/api/auth/telegram/session/', { method: 'POST' });
+    tgToken = res.token;
+
+    // Bot URL ni yangi tabda och
+    window.open(res.bot_url, '_blank');
+
+    // UI: polling holatga o'tish
+    document.getElementById('tg-start-wrap').classList.add('hidden');
+    document.getElementById('tg-polling-wrap').classList.remove('hidden');
+
+    // Countdown
+    tgSecondsLeft = res.expires_in || 300;
+    updateTgCountdown();
+    tgCountdown = setInterval(() => {
+      tgSecondsLeft--;
+      updateTgCountdown();
+      if (tgSecondsLeft <= 0) cancelTgAuth('expired');
+    }, 1000);
+
+    // Polling — har 2 sekundda
+    tgPollInterval = setInterval(pollTgSession, 2000);
+
+  } catch(e) {
+    msg('al-tg', e.detail || 'Xato yuz berdi. Qayta urinib ko\'ring.', 'err');
+  }
+}
+
+function updateTgCountdown() {
+  const m = Math.floor(tgSecondsLeft / 60);
+  const s = tgSecondsLeft % 60;
+  const el = document.getElementById('tg-countdown');
+  if (el) el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+}
+
+async function pollTgSession() {
+  if (!tgToken) return;
+  try {
+    const res = await req(`/api/auth/telegram/session/${tgToken}/`);
+
+    if (res.status === 'success') {
+      stopTgPolling();
+      // Login
+      token = res.access_token;
+      localStorage.setItem('prava_token', token);
+      user = res.user;
+      resetTgUI();
+      await onLogin();
+    }
+
+    if (res.status === 'expired') {
+      cancelTgAuth('expired');
+    }
+  } catch { /* tarmoq xatoligi — davom et */ }
+}
+
+function stopTgPolling() {
+  if (tgPollInterval) { clearInterval(tgPollInterval); tgPollInterval = null; }
+  if (tgCountdown)    { clearInterval(tgCountdown);    tgCountdown    = null; }
+}
+
+function cancelTgAuth(reason = 'cancelled') {
+  stopTgPolling();
+  resetTgUI();
+  if (reason === 'expired') {
+    msg('al-tg', '⏰ Sessiya muddati tugadi. Qaytadan urinib ko\'ring.', 'err');
+  }
+}
+
+function resetTgUI() {
+  tgToken = null;
+  document.getElementById('tg-start-wrap').classList.remove('hidden');
+  document.getElementById('tg-polling-wrap').classList.add('hidden');
+}
+
+// ── AUTH ───────────────────────────────────────────────────────────────────────
+
+async function sendOtp() {
+  const email = document.getElementById('in-email').value.trim();
+  if (!email) return;
+  msg('al-login', '');
+  try {
+    await req('/api/auth/email/request/', { method:'POST', body: JSON.stringify({ email }) });
+    document.getElementById('otp-box').classList.remove('hidden');
+    msg('al-login', '✉️ OTP emailga yuborildi.', 'info');
+  } catch(e) { msg('al-login', e.detail || 'Xato yuz berdi.'); }
+}
+
+async function checkOtp() {
+  const email = document.getElementById('in-email').value.trim();
+  const otp   = document.getElementById('in-otp').value.trim();
+  if (!otp) return;
+  msg('al-login', '');
+  try {
+    const res = await req('/api/auth/email/verify/', {
+      method:'POST', body: JSON.stringify({ email, otp })
+    });
+    token = res.tokens.access;
+    localStorage.setItem('prava_token', token);
+    user = res.user;
+    await onLogin();
+  } catch(e) { msg('al-login', e.detail || 'OTP xato.'); }
+}
+
+function logout() {
+  token = null; user = null; sessId = null;
+  killTimer();
+  localStorage.removeItem('prava_token');
+  document.getElementById('status-bar').classList.add('hidden');
+  show('sc-login');
+  step(1);
+}
+
+async function onLogin() {
+  if (!user) {
+    try { user = await req('/api/auth/me/'); } catch { logout(); return; }
+  }
+  // Status bar
+  document.getElementById('status-bar').classList.remove('hidden');
+  document.getElementById('sb-email').textContent = user.email || user.username;
+  const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
+  document.getElementById('sb-name').textContent  = name || user.username;
+  document.getElementById('sb-plan').innerHTML    = user.is_premium
+    ? '<span class="badge-premium">⭐ PREMIUM</span>'
+    : '<span class="badge-standard">Standard</span>';
+  await loadHome();
+}
+
+// ── HOME ───────────────────────────────────────────────────────────────────────
+
+async function goHome() { await loadHome(); }
+
+async function loadHome() {
+  show('sc-home');
+  step(1);
+  const list = document.getElementById('sess-list');
+  list.innerHTML = '<p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p>';
+  try {
+    const sessions = await req('/api/quiz/sessions/');
+    if (!sessions.length) {
+      list.innerHTML = '<p style="color:#9ca3af;font-size:13px;padding:20px 0;text-align:center">Hali imtihon topshirilmagan.</p>';
+      return;
+    }
+    list.innerHTML = sessions.map(s => {
+      const modeBadge   = s.mode === 'test'
+        ? '<span class="badge m-test">🎯 Test</span>'
+        : `<span class="badge m-cat">📚 ${h(s.category_name || 'Kategoriya')}</span>`;
+      const statusBadge = `<span class="badge ${s.status}">${statusTxt(s.status)}</span>`;
+      const info = s.status === 'completed'
+        ? `${s.score}/${s.total_questions} · ${s.percentage}% · ${s.is_passed ? "✅ O'tdi" : "❌ O'tmadi"}`
+        : `${s.total_questions} savol`;
+      return `
+        <div class="sess-row">
+          <div>
+            <div class="sess-title">Sessiya #${s.id}</div>
+            <div class="sess-meta">${h(info)}</div>
+            <div class="sess-date">${new Date(s.started_at).toLocaleString('uz-UZ')}</div>
+          </div>
+          <div class="sess-badges">${modeBadge}${statusBadge}</div>
+        </div>`;
+    }).join('');
+  } catch { logout(); }
+}
+
+function statusTxt(s) {
+  if (s === 'completed')   return 'Yakunlangan';
+  if (s === 'in_progress') return 'Jarayonda';
+  return 'Tashlab ketilgan';
+}
+
+// ── CATEGORIES ─────────────────────────────────────────────────────────────────
+
+async function goCategories() {
+  show('sc-cats');
+  step(2);
+  selCatId = null;
+  document.getElementById('btn-cat-start').disabled = true;
+  document.getElementById('cat-hint').textContent   = 'Mavzu tanlang';
+  const grid = document.getElementById('cat-grid');
+  grid.innerHTML = '<p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p>';
+  try {
+    const res  = await req('/api/quiz/categories/');
+    const cats = res.sections || res;   // yangi format: {stats, sections}, eski: []
+    if (!cats.length) { grid.innerHTML = '<p style="color:#9ca3af;font-size:13px">Kategoriyalar yo\'q.</p>'; return; }
+    grid.innerHTML = cats.map(c => {
+      const name = c.name?.uzl || c.name_uzl || '';
+      return `
+        <div class="cat-card" onclick="pickCat(${c.id}, this)" data-name="${h(name)}">
+          <div class="cat-name">${h(name)}</div>
+          <div class="cat-meta">${c.questions_count ?? ''} savol</div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = `<p style="color:#ef4444;font-size:13px">${h(e.detail||'Xato.')}</p>`;
+  }
+}
+
+function pickCat(id, el) {
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selCatId = id;
+  document.getElementById('cat-hint').textContent = `Tanlandi: ${el.dataset.name}`;
+  document.getElementById('btn-cat-start').disabled = false;
+}
+
+// ── SESSION START ──────────────────────────────────────────────────────────────
+
+async function startCatSession() {
+  if (!selCatId) return;
+  try {
+    const s = await req('/api/quiz/sessions/', {
+      method:'POST', body: JSON.stringify({ category_id: selCatId })
+    });
+    launchQuiz(s, 'category');
+  } catch(e) { alert(e.detail || 'Sessiya yaratishda xato.'); }
+}
+
+async function startTest() {
+  try {
+    const s = await req('/api/quiz/test/', { method:'POST' });
+    launchQuiz(s, 'test');
+  } catch(e) { alert(e.detail || 'Test sessiyasi yaratishda xato.'); }
+}
+
+function launchQuiz(session, mode) {
+  sessId   = session.id;
+  sessMode = mode;
+  sessQs   = session.session_questions;
+  answers  = {};
+  startedAt = Date.now();
+  renderQuiz();
+  if (mode === 'test' && session.time_limit_minutes) {
+    startTimer(session.time_limit_minutes);
+  }
+}
+
+// ── QUIZ ───────────────────────────────────────────────────────────────────────
+
+function renderQuiz() {
+  show('sc-quiz');
+  step(3);
+
+  document.getElementById('qz-mode-badge').innerHTML = sessMode === 'test'
+    ? '<span class="badge m-test" style="margin-right:8px">🎯 Test</span>'
+    : '<span class="badge m-cat"  style="margin-right:8px">📚 Kategoriya</span>';
+
+  const timerWrap = document.getElementById('timer-wrap');
+  if (sessMode === 'test') timerWrap.classList.remove('hidden');
+  else                     timerWrap.classList.add('hidden');
+
+  const body = document.getElementById('qz-body');
+  body.innerHTML = '';
+
+  sessQs.forEach((sq, idx) => {
+    const q       = sq.question;
+    const imgHtml = q.media?.length
+      ? `<img class="q-img" src="${BASE}${q.media[0].file}" onerror="this.style.display='none'" alt="">`
+      : '';
+    const choicesHtml = q.choices.map(c => `
+      <button class="choice-btn" id="cb-${sq.id}-${c.id}"
+        onclick="pickAnswer(${sq.id}, ${c.id}, ${q.id}, ${c.is_correct})">
+        ${h(c.text_uzl)}
+      </button>`).join('');
+
+    body.innerHTML += `
+      <div class="q-card" id="qc-${sq.id}">
+        <div class="q-num">Savol ${idx+1} / ${sessQs.length} &nbsp;·&nbsp; #${q.number || q.id}</div>
+        <div class="q-text">${h(q.text_uzl)}</div>
+        ${imgHtml}
+        <div class="choices" id="ch-${sq.id}">${choicesHtml}</div>
+      </div>`;
+  });
+
+  syncProgress();
+}
+
+function pickAnswer(sqId, choiceId, qId, isCorrect) {
+  if (answers[qId]?.locked) return;
+
+  const chEl = document.getElementById(`ch-${sqId}`);
+  chEl.querySelectorAll('.choice-btn').forEach(b => {
+    b.classList.remove('correct','wrong');
+    b.disabled = false;
+  });
+
+  document.getElementById(`cb-${sqId}-${choiceId}`).classList.add(isCorrect ? 'correct' : 'wrong');
+
+  if (!isCorrect) {
+    const sq = sessQs.find(s => s.id === sqId);
+    const ok = sq?.question.choices.find(c => c.is_correct);
+    if (ok) document.getElementById(`cb-${sqId}-${ok.id}`)?.classList.add('correct');
+  }
+
+  chEl.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  document.getElementById(`qc-${sqId}`)?.classList.add('answered');
+  answers[qId] = { choiceId, isCorrect, sqId, locked: true };
+  syncProgress();
+}
+
+function syncProgress() {
+  const total    = sessQs.length;
+  const answered = Object.keys(answers).length;
+  const correct  = Object.values(answers).filter(a => a.isCorrect).length;
+  const pct      = total ? Math.round(answered / total * 100) : 0;
+
+  document.getElementById('qz-counter').textContent  = `${answered} / ${total}`;
+  document.getElementById('qz-correct').textContent  = `✓ ${correct} to'g'ri`;
+  document.getElementById('qz-progress').style.width = pct + '%';
+
+  const btn = document.getElementById('btn-submit');
+  if (sessMode === 'test') {
+    btn.disabled    = answered === 0;
+    btn.textContent = answered < total ? `Yakunlash (${answered}/${total})` : 'Yakunlash ✓';
+  } else {
+    btn.disabled    = answered < total;
+    btn.textContent = answered < total ? `Yakunlash (${answered}/${total})` : 'Yakunlash ✓';
+  }
+}
+
+// ── TIMER ──────────────────────────────────────────────────────────────────────
+
+function startTimer(min) {
+  killTimer();
+  timeLeft = min * 60;
+  tickTimer();
+  timerHandle = setInterval(tickTimer, 1000);
+}
+
+function killTimer() {
+  if (timerHandle) { clearInterval(timerHandle); timerHandle = null; }
+}
+
+function tickTimer() {
+  const el = document.getElementById('timer');
+  if (!el) return;
+  const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className   = 'timer' + (timeLeft <= 60 ? ' danger' : timeLeft <= 300 ? ' warn' : '');
+  if (timeLeft <= 0) { killTimer(); timeUp(); }
+  timeLeft--;
+}
+
+async function timeUp() {
+  alert('⏰ Vaqt tugadi! Natijalar saqlanmoqda…');
+  await submitAnswers(true);
+}
+
+// ── SUBMIT ─────────────────────────────────────────────────────────────────────
+
+async function submitAnswers(auto = false) {
+  killTimer();
+  const missing = sessQs.length - Object.keys(answers).length;
+  if (!auto && missing > 0) {
+    if (!confirm(`${missing} ta savolga javob berilmadi. Baribir yakunlash?`)) return;
+  }
+
+  const list = Object.entries(answers).map(([qId, a]) => {
+    const sq      = sessQs.find(s => s.id === a.sqId);
+    const correct = sq?.question.choices.find(c => c.is_correct);
+    return {
+      question_id:       parseInt(qId),
+      choice_id:         a.choiceId,
+      correct_choice_id: correct?.id || 0,
+      status:            a.isCorrect,
+    };
+  });
+
+  try {
+    const result = await req(`/api/quiz/sessions/${sessId}/submit/`, {
+      method:'POST',
+      body: JSON.stringify({ answers: list, finished_at: new Date().toISOString() }),
+    });
+    showResult(result);
+  } catch(e) { alert(e.detail || 'Yuborishda xato.'); }
+}
+
+// ── ABANDON ────────────────────────────────────────────────────────────────────
+
+async function doAbandon() {
+  if (!confirm('Imtihonni tashlab ketmoqchimisiz? Natija saqlanmaydi.')) return;
+  killTimer();
+  try { await req(`/api/quiz/sessions/${sessId}/abandon/`, { method:'POST' }); } catch { /* ignore */ }
+  await goHome();
+}
+
+// ── RESULT ─────────────────────────────────────────────────────────────────────
+
+function showResult(sess) {
+  show('sc-result');
+  step(4);
+  killTimer();
+
+  const passed  = sess.is_passed;
+  const elapsed = startedAt ? Math.round((Date.now() - startedAt) / 1000) : 0;
+  const em      = Math.floor(elapsed / 60), es = elapsed % 60;
+
+  document.getElementById('res-score').textContent  = `${sess.score}/${sess.total_questions}`;
+  document.getElementById('res-score').className    = `res-score ${passed ? 'pass' : 'fail'}`;
+  document.getElementById('res-label').textContent  = passed ? "✅ O'tdingiz!" : "❌ Muvaffaqiyatsiz";
+  document.getElementById('rs-total').textContent   = sess.total_questions;
+  document.getElementById('rs-pct').textContent     = sess.percentage + '%';
+  document.getElementById('rs-wrong').textContent   = sess.total_questions - sess.score;
+  document.getElementById('rs-time').textContent    = `${String(em).padStart(2,'0')}:${String(es).padStart(2,'0')}`;
+
+  const body = document.getElementById('res-questions');
+  body.innerHTML = '';
+
+  (sess.session_questions || []).forEach((sq, idx) => {
+    const q     = sq.question;
+    const ok    = sq.is_correct;
+    const img   = q.media?.length
+      ? `<img class="q-img" src="${BASE}${q.media[0].file}" onerror="this.style.display='none'" alt="">`
+      : '';
+    const chs   = q.choices.map(c => {
+      let cls = '';
+      if (sq.selected_choice?.id === c.id)  cls = ok ? 'correct' : 'wrong';
+      else if (sq.correct_choice?.id === c.id) cls = 'correct';
+      return `<button class="choice-btn ${cls}" disabled>${h(c.text_uzl)}</button>`;
+    }).join('');
+    const expl  = q.explanation_uzl
+      ? `<div style="margin-top:10px;font-size:12px;color:#6b7280;background:#f8fafc;padding:8px 10px;border-radius:6px;line-height:1.5">💡 ${h(q.explanation_uzl)}</div>`
+      : '';
+
+    body.innerHTML += `
+      <div class="q-card" style="border-left:4px solid ${ok?'#10b981':'#ef4444'}">
+        <div class="q-num">${idx+1}. #${q.number||q.id} — ${ok?"✅ To'g'ri":"❌ Xato"}</div>
+        <div class="q-text">${h(q.text_uzl)}</div>
+        ${img}
+        <div class="choices">${chs}</div>
+        ${expl}
+      </div>`;
+  });
+}
+
+// ── PROFILE ────────────────────────────────────────────────────────────────────
+
+async function goProfile() {
+  show('sc-profile');
+  msg('al-profile','');
+  try { user = await req('/api/auth/me/'); } catch { logout(); return; }
+
+  const u    = user;
+  const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username;
+  const init = name.charAt(0).toUpperCase();
+
+  document.getElementById('pf-header').innerHTML = `
+    <div class="pf-avatar">${
+      u.photo_url
+        ? `<img src="${h(u.photo_url)}" onerror="this.parentElement.textContent='${init}'" alt="">`
+        : init
+    }</div>
+    <div>
+      <div class="pf-full-name">${h(name)}</div>
+      <div class="pf-email">${h(u.email || '—')}</div>
+    </div>`;
+
+  document.getElementById('pf-info').innerHTML = [
+    ['Username',    u.username],
+    ['Rol',         u.role],
+    ['Status',      u.is_premium ? '⭐ Premium' : 'Standard'],
+    ['Auth manba',  u.auth_source],
+    ['Telegram ID', u.telegram_id || '—'],
+    ['Telefon',     u.phone_number || '—'],
+  ].map(([k,v]) => `
+    <div class="info-item">
+      <div class="info-key">${k}</div>
+      <div class="info-val">${h(String(v))}</div>
+    </div>`).join('');
+
+  document.getElementById('pf-fn').value    = u.first_name    || '';
+  document.getElementById('pf-ln').value    = u.last_name     || '';
+  document.getElementById('pf-phone').value = u.phone_number  || '';
+  document.getElementById('pf-photo').value = u.photo_url     || '';
+}
+
+async function saveProfile() {
+  msg('al-profile','');
+  const payload = {
+    first_name:   document.getElementById('pf-fn').value.trim(),
+    last_name:    document.getElementById('pf-ln').value.trim(),
+    phone_number: document.getElementById('pf-phone').value.trim(),
+    photo_url:    document.getElementById('pf-photo').value.trim() || null,
+  };
+  try {
+    user = await req('/api/auth/me/', { method:'PATCH', body: JSON.stringify(payload) });
+    msg('al-profile','✅ Profil muvaffaqiyatli yangilandi.','ok');
+    const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
+    document.getElementById('sb-email').textContent = user.email || user.username;
+    document.getElementById('sb-name').textContent  = name || user.username;
+  } catch(e) {
+    const detail = typeof e === 'object' ? Object.values(e).flat().join(' ') : String(e);
+    msg('al-profile', detail || 'Xato yuz berdi.');
+  }
+}
+
+// ── MISTAKES ───────────────────────────────────────────────────────────────────
+
+async function goMistakes() {
+  show('sc-mistakes');
+  // Kategoriya filterini to'ldirish (bir marta)
+  const sel = document.getElementById('mis-cat-filter');
+  if (sel.options.length === 1) {
+    try {
+      const res  = await req('/api/quiz/categories/');
+      const cats = res.sections || res;
+      cats.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id; o.textContent = c.name?.uzl || c.name_uzl || '';
+        sel.appendChild(o);
+      });
+    } catch { /* ignore */ }
+  }
+  await loadMistakes();
+}
+
+async function loadMistakes() {
+  const catId = document.getElementById('mis-cat-filter').value;
+  const url   = '/api/quiz/mistakes/' + (catId ? `?category=${catId}` : '');
+  const body  = document.getElementById('mis-body');
+  const count = document.getElementById('mis-count');
+  body.innerHTML = '<p style="color:#9ca3af;font-size:13px">Yuklanmoqda…</p>';
+  try {
+    const items = await req(url);
+    if (!items.length) {
+      count.textContent = '';
+      body.innerHTML = `
+        <div style="text-align:center;padding:32px 0">
+          <div style="font-size:40px;margin-bottom:10px">🎉</div>
+          <p style="font-weight:700;font-size:15px;margin-bottom:4px">Xatolar yo'q!</p>
+          <p style="font-size:13px;color:#9ca3af">Barcha savollarga to'g'ri javob berdingiz.</p>
+        </div>`;
+      return;
+    }
+
+    count.textContent = `Jami ${items.length} ta savol · Eng ko'p xato qilingan yuqorida`;
+
+    body.innerHTML = items.map((item, idx) => {
+      const q   = item.question;
+      const img = q.media?.length
+        ? `<img class="q-img" src="${BASE}${q.media[0].file}" onerror="this.style.display='none'" alt="">`
+        : '';
+      const chs = q.choices.map(c => {
+        const isCorrect = item.correct_choice?.id === c.id;
+        return `<button class="choice-btn ${isCorrect ? 'correct' : ''}" disabled>${h(c.text_uzl)}</button>`;
+      }).join('');
+      const expl = q.explanation_uzl
+        ? `<div style="margin-top:10px;font-size:12px;color:#6b7280;background:#f8fafc;padding:8px 10px;border-radius:6px;line-height:1.5">💡 ${h(q.explanation_uzl)}</div>`
+        : '';
+
+      return `
+        <div class="q-card" style="border-left:4px solid #ef4444">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <div class="q-num" style="margin-bottom:0">${idx+1}. #${q.number||q.id} · ${h(q.category_name||'—')}</div>
+            <span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px">
+              ❌ ${item.wrong_count} marta xato
+            </span>
+          </div>
+          <div class="q-text">${h(q.text_uzl)}</div>
+          ${img}
+          <div class="choices">${chs}</div>
+          ${expl}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    body.innerHTML = `<p style="color:#ef4444;font-size:13px">${h(e.detail||'Xato yuz berdi.')}</p>`;
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+
+if (token) {
+  onLogin();
+} else {
+  show('sc-login');
+  step(1);
+}
+</script>
+</body>
+</html>
