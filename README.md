@@ -6,8 +6,7 @@ pravaX — haydovchilik imtihoniga tayyorlanish platformasining yagona monorepos
 
 - `apps/mobile` — Expo/React Native mobil ilova (`prava-go`)
 - `apps/academy` — pravaX Academy web boshqaruv paneli
-- `backend` — Django REST API, quiz va to‘lov servislar
-- `backend/pravaX-backend.zip` — backendning ishga tayyor arxiv paketi
+- `apps/backend` — Django REST API, quiz va to‘lov servislar
 
 ## Ishga tushirish
 
@@ -30,7 +29,7 @@ yarn dev
 ### Backend
 
 ```bash
-cd backend
+cd apps/backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -40,10 +39,3 @@ python manage.py runserver
 ```
 
 Maxfiy `.env` fayllar repozitoriyga kiritilmaydi. Ishga tushirishdan oldin muhit o‘zgaruvchilarini alohida sozlang.
-
-Backendni arxivdan olish:
-
-```bash
-unzip backend/pravaX-backend.zip -d pravaX-backend
-cd pravaX-backend
-```
